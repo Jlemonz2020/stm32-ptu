@@ -1,0 +1,15 @@
+MDK-ARM/FOC/
+MDK-ARM/DebugConfig/
+MDK-ARM/RTE/
+MDK-ARM/*.log
+MDK-ARM/*.lst
+MDK-ARM/*.o
+MDK-ARM/*.d
+MDK-ARM/*.crf
+MDK-ARM/*.axf
+MDK-ARM/*.hex
+MDK-ARM/*.map
+MDK-ARM/*.lnp
+MDK-ARM/*.htm
+MDK-ARM/*.dep
+MDK-ARM/*.iex
