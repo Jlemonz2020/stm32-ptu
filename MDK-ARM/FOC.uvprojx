@@ -1308,6 +1308,11 @@
               <FileType>1</FileType>
               <FilePath>../Core/Drivers/as5600.c</FilePath>
             </File>
+            <File>
+              <FileName>drv8316.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Drivers/drv8316.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

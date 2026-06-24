@@ -1,11 +1,14 @@
 #include "bsp_adc.h"
 
+#include <math.h>
+
 #include "adc.h"
 
 typedef struct {
   float phase_a_offset;
   float phase_b_offset;
   float phase_c_offset;
+  float current_v_per_a;
   uint8_t calibrated;
 } bsp_adc_state_t;
 
@@ -13,6 +16,7 @@ static bsp_adc_state_t adc_state = {
   2048.0f,
   2048.0f,
   2048.0f,
+  BSP_ADC_CURRENT_V_PER_A,
   0U
 };
 
@@ -60,8 +64,23 @@ static float raw_to_voltage(uint16_t raw)
 
 static float raw_to_current(uint16_t raw, float offset)
 {
-  float voltage_delta = raw_to_voltage(raw) - raw_to_voltage((uint16_t)offset);
-  return voltage_delta / BSP_ADC_CURRENT_V_PER_A;
+  float voltage_delta = (((float)raw - offset) * BSP_ADC_VREF) / BSP_ADC_FULL_SCALE;
+  return voltage_delta / adc_state.current_v_per_a;
+}
+
+static float ntc_temperature_c_from_voltage(float voltage)
+{
+  float resistance;
+  float inv_temp_k;
+
+  if ((voltage <= 0.0f) || (voltage >= BSP_ADC_VREF)) {
+    return 0.0f;
+  }
+
+  resistance = (BSP_ADC_NTC_PULLUP_OHM * voltage) / (BSP_ADC_VREF - voltage);
+  inv_temp_k = (1.0f / BSP_ADC_NTC_NOMINAL_TEMP_K) +
+               (logf(resistance / BSP_ADC_NTC_NOMINAL_OHM) / BSP_ADC_NTC_BETA);
+  return (1.0f / inv_temp_k) - 273.15f;
 }
 
 void bsp_adc_init(void)
@@ -70,6 +89,15 @@ void bsp_adc_init(void)
   (void)HAL_ADC_Stop(&hadc2);
   (void)HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
   (void)HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
+  adc_state.current_v_per_a = BSP_ADC_CURRENT_V_PER_A;
+}
+
+void bsp_adc_set_current_sense_gain(float volts_per_amp)
+{
+  if (volts_per_amp <= 0.0f) {
+    volts_per_amp = BSP_ADC_CURRENT_V_PER_A;
+  }
+  adc_state.current_v_per_a = volts_per_amp;
 }
 
 HAL_StatusTypeDef bsp_adc_calibrate(uint16_t samples)
@@ -191,5 +219,5 @@ float bsp_adc_get_temp(void)
   }
 
   voltage = raw_to_voltage(raw);
-  return (voltage - BSP_ADC_TEMP_OFFSET_V) / BSP_ADC_TEMP_V_PER_C;
+  return ntc_temperature_c_from_voltage(voltage);
 }

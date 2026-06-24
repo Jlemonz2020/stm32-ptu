@@ -50,14 +50,14 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
   /* USER CODE BEGIN MX_GPIO_Init_1 */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(DRV8316_NCS_GPIO_Port, DRV8316_NCS_Pin, GPIO_PIN_SET);
   /* USER CODE END MX_GPIO_Init_1 */
 
-  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Pin = DRV8316_NCS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(DRV8316_NCS_GPIO_Port, &GPIO_InitStruct);
 
 }
 

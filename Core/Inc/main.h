@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
+#define DRV8316_NCS_Pin GPIO_PIN_15
+#define DRV8316_NCS_GPIO_Port GPIOA
 
 /* USER CODE END Private defines */
 
